@@ -31,16 +31,16 @@ class Blimp {
         $this->client = BlimpClient::factory($config);
     }
 
-    public function push(PushNotification $notification){
-
-
-
-        $response = $this->client->getCommand('push/ios')->execute();
+    /**
+     * @param $device_token
+     *
+     * @return array
+     */
+    public function info($device_token){
+        return $this->client->getCommand('info', array(
+            'device' => $device_token
+        ))->execute();
 
     }
-
-
-
-
 
 }
