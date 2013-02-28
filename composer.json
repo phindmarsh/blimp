@@ -1,0 +1,26 @@
+{
+    "name": "phindmarsh/blimp",
+    "description": "Library to handle Push Notifications via Urban Airship using Guzzle. Inspired by the simplon_helium library by Tino Ehrich",
+    "homepage": "https://github.com/phindmarsh/blimp",
+    "version": "1.0.0",
+    "type": "library",
+    "keywords": ["urban airship", "notifications", "ios"],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Patrick Hindmarsh",
+            "email": "patrick@hindmar.sh"
+        }
+    ],
+    
+    "require": {
+        "php": ">=5.3.3",
+        "guzzle/guzzle": "3.1.*"
+    },
+
+    "autoload": {
+        "psr-0": {
+            "Blimp": "src/"
+        }
+    }
+}
