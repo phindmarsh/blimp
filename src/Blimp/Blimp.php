@@ -3,6 +3,7 @@
 
 namespace Blimp;
 
+use Guzzle\Http\Message\Response;
 use InvalidArgumentException;
 
 class Blimp {
@@ -40,6 +41,20 @@ class Blimp {
         return $this->client->getCommand('info', array(
             'device' => $device_token
         ))->execute();
+
+    }
+
+    /**
+     * @param $device_token
+     *
+     * @return boolean
+     */
+    public function delete($device_token){
+        $response = $this->client->getCommand('delete', array(
+            'device' => $device_token
+        ))->execute();
+
+        return $response instanceof Response && $response->getStatusCode() === 204;
 
     }
 
