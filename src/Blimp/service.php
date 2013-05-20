@@ -72,65 +72,133 @@ return array(
             )
         ),
         'push' => array(
+            'class' => '\\Blimp\\Command\\PushCommand',
             'httpMethod' => 'POST',
             'uri' => 'push/',
             'parameters' => array(
                 'alert' => array(
-                    'required' => true,
+                    'location' => 'json',
                     'type' => 'string',
-                    'description' => 'The text to display for the notification'
+                    'required' => true,
+                    'description' => 'The alert message to display on the notification.'
                 ),
-                'custom_data' => array(
-                    'required' => false,
+                'metadata' => array(
+                    'location' => 'json',
                     'type' => 'array',
-                    'description' => 'A hash of custom data to send with the notification'
+                    'required' => false,
+                    'description' => 'Any additional custom metadata to send with the notification'
                 ),
                 'device_tokens' => array(
+                    'location' => 'json',
                     'type' => 'array',
                     'required' => false,
-                    'description' => 'An array of device tokens to send to'
+                    'description' => 'An array of device tokens to send to (iOS devices)',
+                    'filters' => array(
+                        array(
+                            'method' => '\\Blimp\\Filters\\TokenArrayFilter::deviceTokens',
+                            'args' => array('@value', '@api')
+                        )
+                    )
                 ),
-                'aliases' => array(
+                'apids' => array(
+                    'location' => 'json',
                     'type' => 'array',
                     'required' => false,
-                    'description' => 'An array of device aliases to send to'
+                    'description' => 'An array of APIDs to send to (Android and WP)',
+                    'filters' => array(
+                        array(
+                            'method' => '\\Blimp\\Filters\\TokenArrayFilter::apids',
+                            'args' => array('@value', '@api')
+                        )
+                    )
+                ),
+                'device_pins' => array(
+                    'location' => 'json',
+                    'type' => 'array',
+                    'required' => false,
+                    'description' => 'An array of device pins to send to (Blackberry)',
+                    'filters' => array(
+                        array(
+                            'method' => '\\Blimp\\Filters\\TokenArrayFilter::devicePins',
+                            'args' => array('@value', '@api')
+                        )
+                    )
                 ),
                 'tags' => array(
+                    'location' => 'json',
                     'type' => 'array',
                     'required' => false,
-                    'description' => 'An array of device tags to send to'
+                    'description' => 'An array of device tags to send to',
+                    'filters' => array(
+                        array(
+                            'method' => '\\Blimp\\Filters\\TokenArrayFilter::tagsOrAliases',
+                            'args' => array('@value', '@api')
+                        )
+                    )
+                ),
+                'aliases' => array(
+                    'location' => 'json',
+                    'type' => 'array',
+                    'required' => false,
+                    'description' => 'An array of device aliases to send to',
+                    'filters' => array(
+                        array(
+                            'method' => '\\Blimp\\Filters\\TokenArrayFilter::tagsOrAliases',
+                            'args' => array('@value', '@api')
+                        )
+                    )
+                ),
+                'exclude_tokens' => array(
+                    'location' => 'json',
+                    'type' => 'array',
+                    'required' => false,
+                    'description' => 'An array of tokens to exclude sending to',
+                    'filters' => array(
+                        array(
+                            'method' => '\\Blimp\\Filters\\TokenArrayFilter::deviceTokens',
+                            'args' => array('@value', '@api')
+                        )
+                    )
+                ),
+                'aps' => array(
+                    'location' => 'json',
+                    'required' => false,
+                    'type' => 'object',
+                    'description' => 'Dedicated payload for Apple Push Service parameters',
+                    'properties' => array(
+                        'badge' => array(
+                            'location' => 'json',
+                            'required' => false,
+                            'type' => array('number', 'string'),
+                            'description' => 'A badge number to display on the app icon (iOS only)'
+                        ),
+                        'sound' => array(
+                            'location' => 'json',
+                            'required' => false,
+                            'type' => 'string',
+                            'description' => 'A sound to play when the notification is delivered (iOS only)'
+                        ),
+                    )
+                ),
+                'android' => array(
+                    'location' => 'json',
+                    'required' => false,
+                    'type' => 'array',
+                    'description' => 'Dedicated payload for Android Devices'
+                ),
+                'blackberry' => array(
+                    'location' => 'json',
+                    'required' => false,
+                    'type' => 'array',
+                    'description' => 'Dedicated payload for Blackberry devices'
                 ),
                 'schedule_for' => array(
+                    'location' => 'json',
                     'type' => 'array',
                     'required' => false,
                     'description' => 'An array of device tokens to send to'
                 ),
-                'exclude_tokens' => array(
-                    'type' => 'array',
-                    'required' => false,
-                    'description' => 'An array of tokens to exclude sending to'
-                )
             )
-        ),
-        'push/ios' => array(
-            'extends' => 'push',
-            'class' => '\\Blimp\\Command\\Push\\IOSPushCommand',
-            'parameters' => array(
-                'badge' => array(
-                    'required' => false,
-                    'type' => array('number', 'string'),
-                    'description' => 'A badge number to display on the app icon (iOS only)'
-                ),
-                'sound' => array(
-                    'required' => false,
-                    'type' => 'string',
-                    'description' => 'A sound to play when the notification is delivered (iOS only)'
-                )
-            )
-        ),
-        'push/android' => array(
-            'extends' => 'push',
-            'class' => '\\Blimp\\Command\\Push\\AndroidPushCommand'
         )
     )
 );

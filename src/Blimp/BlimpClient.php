@@ -2,10 +2,12 @@
 
 namespace Blimp;
 
+use Blimp\Visitors\ApsRequestVisitor;
 use Guzzle\Common\Collection,
     Guzzle\Service\Client,
     Guzzle\Service\Description\ServiceDescription,
     Guzzle\Plugin\CurlAuth\CurlAuthPlugin;
+use Guzzle\Service\Command\LocationVisitor\VisitorFlyweight;
 
 /**
  * My example web service client
@@ -36,7 +38,6 @@ class BlimpClient extends Client
         // Attach a service description to the client
         $description = ServiceDescription::factory(__DIR__ . '/service.php');
         $client->setDescription($description);
-
 
         $client->addSubscriber(new CurlAuthPlugin(
             $config->get('appKey'),

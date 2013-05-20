@@ -58,4 +58,10 @@ class Blimp {
 
     }
 
+    public function send(PushNotification $notification){
+        return $this->client->getCommand('push', $notification->getData())->execute();
+    }
+
+
+
 }

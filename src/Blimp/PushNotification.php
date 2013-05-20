@@ -4,104 +4,369 @@ namespace Blimp;
 
 class PushNotification {
 
-    /**
-     * A list of devices to send this notification to
-     *
-     * @var array
-     */
-    private $devices = array();
 
-    /**
-     * The string to display on the device
-     *
-     * @var string
-     */
-    private $alert;
-
-    /**
-     * @var array
-     */
-    private $payload = array();
+    /** @var array */
+    private $_data = array();
 
 
     /**
-     * Initialise a new notification
-     *
      * @return PushNotification
      */
-    public static function init(){
-        return new static();
+    public static function init() {
+        return new PushNotification();
     }
 
     /**
-     * @param Device $device
+     * @param $key
+     * @param $value
+     *
      * @return PushNotification
      */
-    public function addDevice(Device $device){
-        return $this->addDevices(array($device));
-    }
-
-    /**
-     * @param Device[] $devices
-     * @return PushNotification
-     */
-    public function addDevices(array $devices){
-        foreach($devices as $device){
-            $type = $device->getType();
-            if(!isset($this->devices[$type]))
-                $this->devices[$type] = array();
-
-            if(!in_array($device, $this->devices[$type]))
-                $this->devices[$type][] = $device;
-        }
+    protected function _setByKey($key, $value) {
+        $this->_data[$key] = $value;
 
         return $this;
+    }
+
+    /**
+     * @param $key
+     *
+     * @return bool|mixed
+     */
+    protected function _getByKey($key) {
+        if (!isset($this->_data[$key])) {
+            return false;
+        }
+
+        return $this->_data[$key];
+    }
+
+    /**
+     * @param $key
+     *
+     * @return array
+     */
+    protected function _getByKeyArrayElement($key) {
+        $cached = $this->_getByKey($key);
+
+        if (!is_array($cached)) {
+            $cached = array();
+        }
+
+        return $cached;
+    }
+
+    /**
+     * @param $jsonData
+     *
+     * @return PushNotification
+     */
+    public function setData($jsonData) {
+        $this->_data = json_decode($jsonData, true);
+
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getData() {
+        return $this->_data;
+    }
+
+    /**
+     * @param array $deviceTokens
+     *
+     * @return PushNotification
+     */
+    public function setDeviceTokens(array $deviceTokens) {
+        $this->_setByKey('device_tokens', $deviceTokens);
+
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    protected function _getDeviceTokens() {
+        return $this->_getByKey('device_tokens');
+    }
+
+    /**
+     * @param array $deviceTokens
+     *
+     * @return PushNotification
+     */
+    public function setExcludedDeviceTokens(array $deviceTokens) {
+        $this->_setByKey('exclude_tokens', $deviceTokens);
+
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    protected function _getExcludedDeviceTokens() {
+        return $this->_getByKey('exclude_tokens');
+    }
+
+    /**
+     * @param array $aliases
+     *
+     * @return PushNotification
+     */
+    public function setAliases(array $aliases) {
+        $this->_setByKey('aliases', $aliases);
+
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    protected function _getAliases() {
+        return $this->_getByKey('aliases');
+    }
+
+    /**
+     * @param $tags
+     *
+     * @return PushNotification
+     */
+    public function setTags(array $tags) {
+        $this->_setByKey('tags', $tags);
+
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    protected function _getTags() {
+        return $this->_getByKey('tags');
+    }
+
+    /**
+     * @param $date
+     *
+     * @return PushNotification
+     */
+    public function setScheduledFor($date) {
+        $cached = $this->_getByKey('scheduled_for');
+
+        // catch empty value
+        if (!is_array($cached)) {
+            $cached = array();
+        }
+
+        // 2009-06-01+13:00:00
+        $cached[] = $date;
+
+        $this->_setByKey('scheduled_for', $cached);
+
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    protected function _getScheduledFor() {
+        return $this->_getByKey('scheduled_for');
+    }
+
+    /**
+     * @param $key
+     * @param $value
+     *
+     * @return PushNotification
+     */
+    protected function _setApsElementByKey($key, $value) {
+        $cached = $this->_getByKeyArrayElement('aps');
+
+        $cached[$key] = $value;
+
+        $this->_setByKey('aps', $cached);
+
+        return $this;
+    }
+
+    /**
+     * @param $key
+     *
+     * @return bool
+     */
+    protected function _getApsElementByKey($key) {
+        $cached = $this->_getByKeyArrayElement('aps');
+
+        if (!isset($cached[$key])) {
+            return false;
+        }
+
+        return $cached[$key];
+    }
+
+    /**
+     * @param $key
+     * @param $value
+     *
+     * @return $this
+     */
+    protected function _setAndroidElementByKey($key, $value){
+        $cached = $this->_getByKeyArrayElement('android');
+
+        $cached[$key] = $value;
+
+        $this->_setByKey('android', $cached);
+
+        return $this;
+    }
+
+    /**
+     * @param $key
+     *
+     * @return bool
+     */
+    protected function _getAndroidElementByKey($key) {
+        $cached = $this->_getByKeyArrayElement('android');
+
+        if (!isset($cached[$key])) {
+            return false;
+        }
+
+        return $cached[$key];
+    }
+
+    /**
+     * @param $badge
+     *
+     * @return PushNotification
+     */
+    public function setBadge($badge) {
+        $this->_setApsElementByKey('badge', $badge);
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    protected function _getBadge() {
+        return $this->_getApsElementByKey('badge');
+    }
+
+    /**
+     * @param $sound
+     *
+     * @return PushNotification
+     */
+    public function setSound($sound) {
+        $this->_setApsElementByKey('sound', $sound);
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    protected function _getSound() {
+        return $this->_getApsElementByKey('badge');
     }
 
     /**
      * @param $alert
+     *
      * @return PushNotification
      */
     public function setAlert($alert) {
-        $this->payload['alert'] = $alert;
+        $this->_setByKey('alert', $alert);
+
         return $this;
     }
 
+    /**
+     * @return string
+     */
+    protected function _getAlert() {
+        return $this->_getByKey('alert');
+    }
 
-    public function setCustomData($data){
-        $this->payload['custom_data'] = $data;
+    /**
+     * @param $key
+     * @param $value
+     *
+     * @return PushNotification
+     */
+    protected function _setMetadataElementByKey($key, $value) {
+        $cached = $this->_getByKeyArrayElement('metadata');
+
+        $cached[$key] = $value;
+
+        $this->_setByKey('metadata', $cached);
+
         return $this;
     }
 
-    public function setBadge($badge){
-        $this->payload['badge'] = $badge;
-        return $this;
-    }
+    /**
+     * @param $key
+     *
+     * @return PushNotification
+     */
+    protected function _removeMetadataElementByKey($key) {
+        $cached = $this->_getByKeyArrayElement('metadata');
 
-    public function send(Blimp $blimp) {
-
-        $sent_pushes = array();
-
-        foreach($this->devices as $type => $devices){
-            $command = "push/$type";
-            $arguments= $this->payload;
-            $arguments['device_tokens'] = array();
-            foreach($devices as $device){
-                /** @var Device $device */
-                $arguments['device_tokens'][] = $device->getToken();
-            }
-
-            $response = $blimp->client->getCommand($command, $arguments)->execute();
-            if(is_array($response) && isset($response['push_id'])){
-                $sent_pushes[] = $response['push_id'];
-            }
+        if (isset($cached[$key])) {
+            unset($cached[$key]);
         }
 
-        return $sent_pushes;
+        $this->_setByKey('metadata', $cached);
 
+        return $this;
     }
 
+    /**
+     * @param $key
+     *
+     * @return bool
+     */
+    protected function _getMetadataElementByKey($key) {
+        $cached = $this->_getByKeyArrayElement('metadata');
 
+        if (!isset($cached[$key])) {
+            return false;
+        }
 
+        return $cached[$key];
+    }
 
+    /**
+     * @param $key
+     * @param $value
+     *
+     * @return PushNotification
+     */
+    public function setMetadata($key, $value) {
+        $this->_setMetadataElementByKey($key, $value);
+
+        return $this;
+    }
+
+    /**
+     * @param $key
+     *
+     * @return mixed
+     */
+    protected function _getMetadataByKey($key) {
+        return $this->_getMetadataByKey($key);
+    }
+
+    /**
+     * @param $key
+     *
+     * @return PushNotification
+     */
+    public function removeMetadataByKey($key) {
+        $this->_removeMetadataElementByKey($key);
+
+        return $this;
+    }
 }
